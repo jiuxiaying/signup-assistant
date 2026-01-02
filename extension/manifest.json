@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "🚀 Signup Assistant (自动注册助手)",
+  "version": "4.0.0",
+  "description": "完全开源 - 支持临时邮箱自动获取验证码，或自建API全自动注册",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://windsurf.com/*",
+    "https://codeium.com/*",
+    "https://*.vercel.app/*",
+    "https://www.1secmail.com/*",
+    "https://api.guerrillamail.com/*",
+    "https://*.supabase.co/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://windsurf.com/account/register*"],
+      "js": [
+        "email-config.js",
+        "utils/email-generator.js",
+        "utils/temp-mail-client.js",
+        "utils/supabase-rest.js",
+        "utils/db-manager.js",
+        "utils/state-machine.js",
+        "utils/state-sync.js",
+        "utils/analytics.js",
+        "utils/smart-validator.js",
+        "utils/super-brain.js",
+        "config.js",
+        "utils/api-client.js",
+        "content/floating-panel-core.js",
+        "content/floating-ball.js",
+        "content/content-script.js"
+      ],
+      "css": [
+        "content/floating-ball.css",
+        "popup/brain-panel.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content/floating-ball.html"
+      ],
+      "matches": ["https://windsurf.com/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "🚀 注册助手"
+  }
+}

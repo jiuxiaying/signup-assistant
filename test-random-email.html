@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用API真实邮箱测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4ec9b0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #858585;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .highlight {
+            background: #264f78;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #569cd6;
+        }
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .step-card {
+            background: #252526;
+            border: 2px solid #3e3e42;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .step-card.active {
+            border-color: #0e639c;
+            box-shadow: 0 0 20px rgba(14, 99, 156, 0.3);
+        }
+        .step-card.success {
+            border-color: #2d7d46;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-number {
+            background: #0e639c;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        .step-card.success .step-number {
+            background: #2d7d46;
+        }
+        .step-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #569cd6;
+        }
+        .email-display {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 2px solid #4ec9b0;
+        }
+        .email-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4ec9b0;
+            text-align: center;
+            word-break: break-all;
+        }
+        .code-display {
+            background: #264f78;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .code-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 10px;
+        }
+        button {
+            width: 100%;
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button:hover:not(:disabled) {
+            background: #1177bb;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #3e3e42;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button.success {
+            background: #2d7d46;
+        }
+        button.success:hover {
+            background: #3d9d56;
+        }
+        .log-container {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .log-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #569cd6;
+        }
+        .copy-btn {
+            background: #2d7d46;
+            padding: 8px 20px;
+            font-size: 14px;
+            width: auto;
+            margin: 0;
+        }
+        .log-output {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 6px;
+            padding: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        .log-line {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #3e3e42;
+            padding-left: 10px;
+        }
+        .success { color: #4ec9b0; border-left-color: #4ec9b0; }
+        .error { color: #f48771; border-left-color: #f48771; }
+        .info { color: #569cd6; border-left-color: #569cd6; }
+        .warning { color: #dcdcaa; border-left-color: #dcdcaa; }
+        .progress {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #3e3e42;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0e639c, #4ec9b0);
+            transition: width 0.3s;
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ec9b0;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .instruction {
+            background: #264f78;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #569cd6;
+        }
+        .instruction-title {
+            font-weight: bold;
+            color: #569cd6;
+            margin-bottom: 8px;
+        }
+        .json-view {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-size: 11px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 使用API真实邮箱测试</h1>
+        <p class="subtitle">完全使用API返回的邮箱地址，不自定义用户名</p>
+        
+        <div class="highlight">
+            <strong style="color: #569cd6;">🎯 测试重点：</strong><br>
+            <span style="color: #d4d4d4;">使用API自动生成的邮箱（而非自定义 'windsurf' 前缀），测试是否能收到验证码</span>
+        </div>
+        
+        <div class="step-container">
+            <!-- 步骤1 -->
+            <div class="step-card" id="step1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">生成真实随机邮箱</div>
+                </div>
+                <div id="step1Content">
+                    <p style="color: #858585; margin-bottom: 15px;">使用API自动生成的邮箱</p>
+                    <button onclick="generateEmail('mail-tm')">Mail.tm 随机邮箱</button>
+                    <button onclick="generateEmail('internxt')">Internxt 随机邮箱</button>
+                    <button onclick="generateEmail('tempmail-io')">TempMail.io 随机邮箱</button>
+                </div>
+            </div>
+            
+            <!-- 步骤2 -->
+            <div class="step-card" id="step2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">去 Windsurf 注册</div>
+                </div>
+                <div id="step2Content">
+                    <p style="color: #858585;">请先完成步骤1</p>
+                </div>
+            </div>
+            
+            <!-- 步骤3 -->
+            <div class="step-card" id="step3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">等待验证码</div>
+                </div>
+                <div id="step3Content">
+                    <p style="color: #858585;">请先完成步骤2</p>
+                </div>
+            </div>
+            
+            <!-- 步骤4 -->
+            <div class="step-card" id="step4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">完成验证</div>
+                </div>
+                <div id="step4Content">
+                    <p style="color: #858585;">等待验证码到达</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 日志输出 -->
+        <div class="log-container">
+            <div class="log-header">
+                <div class="log-title">📋 完整日志输出</div>
+                <button onclick="copyLogs()" class="copy-btn">📋 复制所有日志</button>
+            </div>
+            <div class="log-output" id="logOutput">
+                点击上方按钮开始测试...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEmail = '';
+        let currentToken = '';
+        let currentService = '';
+        let currentPassword = '';
+        let checkInterval = null;
+        let checkCount = 0;
+        let maxChecks = 60;
+        
+        function log(message, type = 'info') {
+            const output = document.getElementById('logOutput');
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.innerHTML = `<span style="color: #858585">[${time}]</span> ${message}`;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logOutput').innerHTML = '';
+        }
+        
+        function copyLogs() {
+            const output = document.getElementById('logOutput');
+            const text = output.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ 日志已复制到剪贴板！');
+            });
+        }
+        
+        function setStepActive(stepNum) {
+            document.querySelectorAll('.step-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(`step${stepNum}`).classList.add('active');
+        }
+        
+        function setStepSuccess(stepNum) {
+            document.getElementById(`step${stepNum}`).classList.add('success');
+        }
+        
+        async function generateEmail(service) {
+            clearLogs();
+            setStepActive(1);
+            currentService = service;
+            
+            log(`🚀 开始生成邮箱 (服务: ${service})`, 'info');
+            log(`🎯 重点: 完全使用API返回的随机邮箱`, 'warning');
+            log('═'.repeat(80), 'info');
+            
+            try {
+                if (service === 'mail-tm') {
+                    await generateMailTmRandom();
+                } else if (service === 'internxt') {
+                    await generateInternxtRandom();
+                } else if (service === 'tempmail-io') {
+                    await generateTempMailIoRandom();
+                }
+                
+                setStepSuccess(1);
+                showStep2();
+            } catch (error) {
+                log(`❌ 生成邮箱失败: ${error.message}`, 'error');
+                log(`💡 提示: 请尝试另一个服务`, 'warning');
+            }
+        }
+        
+        async function generateMailTmRandom() {
+            log('📡 Mail.tm - 使用API自动生成邮箱', 'info');
+            log('', 'info');
+            
+            log('步骤1: 获取可用域名...', 'info');
+            const domainRes = await fetch('https://api.mail.tm/domains');
+            log(`   响应: ${domainRes.status} ${domainRes.statusText}`, domainRes.ok ? 'success' : 'error');
+            
+            if (!domainRes.ok) throw new Error('无法获取域名列表');
+            
+            const domains = await domainRes.json();
+            const domain = domains['hydra:member'][0].domain;
+            log(`   ✅ 域名: ${domain}`, 'success');
+            
+            log('', 'info');
+            log('步骤2: 让API生成完全随机的用户名...', 'info');
+            log('   ⚠️ 注意: 不使用 "windsurf" 前缀', 'warning');
+            log('   ⚠️ 使用完全随机的字符串', 'warning');
+            
+            // 完全随机，不带任何前缀
+            const randomStr = Math.random().toString(36).substring(2, 15);
+            currentPassword = Math.random().toString(36).substring(2, 15);
+            currentEmail = `${randomStr}@${domain}`;
+            
+            log(`   ✅ 生成邮箱: ${currentEmail}`, 'success');
+            log(`   📝 用户名部分: ${randomStr}`, 'info');
+            log(`   🔑 密码: ${currentPassword}`, 'info');
+            
+            log('', 'info');
+            log('步骤3: 注册账号...', 'info');
+            const registerRes = await fetch('https://api.mail.tm/accounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address: currentEmail, password: currentPassword })
+            });
+            
+            log(`   响应: ${registerRes.status} ${registerRes.statusText}`, registerRes.ok ? 'success' : 'error');
+            
+            if (!registerRes.ok) {
+                const errorText = await registerRes.text();
+                log(`   错误: ${errorText}`, 'error');
+                throw new Error('注册失败');
+            }
+            
+            const registerData = await registerRes.json();
+            log(`   ✅ 注册成功！`, 'success');
+            
+            const regJsonDiv = document.createElement('div');
+            regJsonDiv.className = 'json-view';
+            regJsonDiv.textContent = '注册数据: ' + JSON.stringify(registerData, null, 2);
+            document.getElementById('logOutput').appendChild(regJsonDiv);
+            
+            log('', 'info');
+            log('步骤4: 登录获取Token...', 'info');
+            const loginRes = await fetch('https://api.mail.tm/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address: currentEmail, password: currentPassword })
+            });
+            
+            log(`   响应: ${loginRes.status} ${loginRes.statusText}`, loginRes.ok ? 'success' : 'error');
+            
+            if (!loginRes.ok) throw new Error('登录失败');
+            
+            const loginData = await loginRes.json();
+            currentToken = loginData.token;
+            log(`   ✅ Token获取成功`, 'success');
+            
+            log('', 'info');
+            log('═'.repeat(80), 'success');
+            log('🎉 完全随机的邮箱生成成功！', 'success');
+            log(`📧 邮箱: ${currentEmail}`, 'success');
+        }
+        
+        async function generateInternxtRandom() {
+            log('📡 Internxt - 测试随机邮箱生成', 'info');
+            log('   API: https://internxt.com (需要研究API)', 'warning');
+            throw new Error('此服务需要进一步研究API');
+        }
+        
+        async function generateTempMailIoRandom() {
+            log('📡 TempMail.io - 测试随机邮箱生成', 'info');
+            log('   API: https://temp-mail.io', 'info');
+            
+            try {
+                const res = await fetch('https://api.internal.temp-mail.io/api/v3/email/new', {
+                    method: 'POST'
+                });
+                
+                log(`   响应: ${res.status} ${res.statusText}`, res.ok ? 'success' : 'error');
+                
+                if (!res.ok) throw new Error('API请求失败');
+                
+                const data = await res.json();
+                currentEmail = data.email;
+                currentToken = data.token;
+                
+                log(`   ✅ 邮箱: ${currentEmail}`, 'success');
+                log(`   🎯 完全由API生成`, 'success');
+                
+                const jsonDiv = document.createElement('div');
+                jsonDiv.className = 'json-view';
+                jsonDiv.textContent = 'API响应: ' + JSON.stringify(data, null, 2);
+                document.getElementById('logOutput').appendChild(jsonDiv);
+                
+                log('', 'info');
+                log('═'.repeat(80), 'success');
+                log('🎉 随机邮箱生成成功！', 'success');
+                
+            } catch (error) {
+                throw new Error(`TempMail.io API失败: ${error.message}`);
+            }
+        }
+        
+        function showStep2() {
+            setStepActive(2);
+            const content = document.getElementById('step2Content');
+            content.innerHTML = `
+                <div class="email-display">
+                    <div style="color: #858585; margin-bottom: 8px; font-size: 14px;">您的完全随机邮箱：</div>
+                    <div class="email-text">${currentEmail}</div>
+                </div>
+                <div class="instruction">
+                    <div class="instruction-title">📝 重要说明：</div>
+                    <div style="color: #d4d4d4; font-size: 14px; line-height: 1.8;">
+                        ⚠️ 这个邮箱是API自动生成的<br>
+                        ⚠️ 没有使用 "windsurf" 前缀<br>
+                        ✅ 测试Windsurf是否只屏蔽特定模式<br>
+                        ✅ 测试完全随机邮箱是否可用
+                    </div>
+                </div>
+                <button onclick="openWindsurf()">🌐 打开 Windsurf 注册页</button>
+                <button onclick="startMonitoring()" class="success">✅ 我已注册，开始监听验证码</button>
+            `;
+        }
+        
+        function openWindsurf() {
+            window.open('https://windsurf.com/account/register', '_blank');
+            log('', 'info');
+            log('🌐 已打开 Windsurf 注册页面', 'info');
+            log(`📧 请使用邮箱: ${currentEmail}`, 'warning');
+        }
+        
+        function startMonitoring() {
+            setStepSuccess(2);
+            setStepActive(3);
+            
+            const content = document.getElementById('step3Content');
+            content.innerHTML = `
+                <div class="countdown" id="countdown">准备中...</div>
+                <div class="progress">
+                    <span style="color: #858585;">检查进度</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <span style="color: #4ec9b0;" id="progressText">0/60</span>
+                </div>
+                <p style="text-align: center; color: #858585; font-size: 14px;">
+                    正在每5秒检查一次邮箱...
+                </p>
+            `;
+            
+            log('', 'info');
+            log('═'.repeat(80), 'info');
+            log('🔍 开始监听验证码...', 'info');
+            log(`📧 邮箱: ${currentEmail}`, 'info');
+            log(`🎯 测试: 完全随机邮箱是否能收到验证码`, 'warning');
+            log('', 'info');
+            
+            checkCount = 0;
+            checkEmails();
+        }
+        
+        async function checkEmails() {
+            checkCount++;
+            
+            const progress = (checkCount / maxChecks) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${checkCount}/${maxChecks}`;
+            document.getElementById('countdown').textContent = `第 ${checkCount} 次检查...`;
+            
+            log(`🔍 第 ${checkCount}/${maxChecks} 次检查...`, 'info');
+            
+            try {
+                let messages = [];
+                
+                if (currentService === 'mail-tm') {
+                    const res = await fetch('https://api.mail.tm/messages', {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                    });
+                    log(`   响应: ${res.status} ${res.statusText}`, res.ok ? 'success' : 'error');
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        messages = data['hydra:member'] || [];
+                    }
+                }
+                
+                log(`   📬 收到 ${messages.length} 封邮件`, messages.length > 0 ? 'success' : 'info');
+                
+                if (messages.length > 0) {
+                    const msgJsonDiv = document.createElement('div');
+                    msgJsonDiv.className = 'json-view';
+                    msgJsonDiv.textContent = '邮件列表: ' + JSON.stringify(messages, null, 2);
+                    document.getElementById('logOutput').appendChild(msgJsonDiv);
+                    
+                    await processMessages(messages);
+                    return;
+                }
+                
+                log('   ⏳ 5秒后继续检查...', 'info');
+                log('', 'info');
+                
+            } catch (error) {
+                log(`   ❌ 检查失败: ${error.message}`, 'error');
+            }
+            
+            if (checkCount < maxChecks) {
+                setTimeout(checkEmails, 5000);
+            } else {
+                log('', 'warning');
+                log('⏰ 已达到最大检查次数', 'warning');
+                log('❌ 未能获取到验证码', 'error');
+                log('', 'info');
+                log('💡 结论:', 'warning');
+                log('   完全随机的邮箱也无法收到验证码', 'warning');
+                log('   可能该域名被整体屏蔽', 'warning');
+            }
+        }
+        
+        async function processMessages(messages) {
+            log('', 'success');
+            log('🎉 收到邮件！', 'success');
+            
+            for (const mail of messages) {
+                const mailId = mail.id || mail['@id'].split('/').pop();
+                
+                const res = await fetch(`https://api.mail.tm/messages/${mailId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                if (!res.ok) continue;
+                
+                const mailContent = await res.json();
+                
+                const fullJsonDiv = document.createElement('div');
+                fullJsonDiv.className = 'json-view';
+                fullJsonDiv.textContent = '完整邮件: ' + JSON.stringify(mailContent, null, 2);
+                document.getElementById('logOutput').appendChild(fullJsonDiv);
+                
+                const subject = mailContent.subject || '';
+                const from = JSON.stringify(mailContent.from || '');
+                const body = mailContent.text || mailContent.intro || '';
+                
+                log(`   发件人: ${from}`, 'info');
+                log(`   主题: ${subject}`, 'info');
+                
+                const fromStr = from.toLowerCase();
+                const isWindsurf = fromStr.includes('windsurf') || 
+                                  fromStr.includes('codeium') || 
+                                  subject.toLowerCase().includes('windsurf');
+                
+                if (isWindsurf) {
+                    log('   ✅ Windsurf 邮件！', 'success');
+                    
+                    const codeMatch = body.match(/(\d{6})/);
+                    if (codeMatch) {
+                        const code = codeMatch[1];
+                        log('', 'success');
+                        log('═'.repeat(80), 'success');
+                        log(`🎉 验证码: ${code}`, 'success');
+                        log('✅ 完全随机邮箱可以收到验证码！', 'success');
+                        log('═'.repeat(80), 'success');
+                        
+                        showVerificationCode(code);
+                        return;
+                    }
+                }
+            }
+            
+            if (checkCount < maxChecks) {
+                setTimeout(checkEmails, 5000);
+            }
+        }
+        
+        function showVerificationCode(code) {
+            setStepSuccess(3);
+            setStepActive(4);
+            setStepSuccess(4);
+            
+            const content = document.getElementById('step4Content');
+            content.innerHTML = `
+                <div class="code-display">
+                    <div style="font-size: 14px; color: #858585; margin-bottom: 10px;">验证码：</div>
+                    <div class="code-text">${code}</div>
+                </div>
+                <button onclick="copyCode('${code}')" class="success">📋 复制验证码</button>
+                <div style="text-align: center; margin-top: 15px; color: #4ec9b0;">
+                    ✅ 测试成功！请复制日志
+                </div>
+            `;
+        }
+        
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ 验证码已复制: ' + code);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+﻿/* 悬浮球样�?- 完整保留原popup界面样式 */
+
+/* ========== 悬浮球基础样式 ========== */
+#signup-floating-ball {
+  position: fixed;
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 悬浮球触发按�?*/
+.floating-ball-trigger {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: move;
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.floating-ball-trigger:hover {
+  transform: scale(1.1) translateY(0px);
+  box-shadow: 0 12px 32px rgba(5, 150, 105, 0.5);
+  animation: none;
+}
+
+.floating-ball-trigger:active {
+  transform: scale(0.95);
+}
+
+/* 拖拽时的样式 */
+.floating-ball-trigger.dragging {
+  cursor: grabbing;
+  animation: none;
+  opacity: 0.8;
+}
+
+/* 展开的面�?*/
+.floating-panel-content {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  width: 400px;
+  max-height: 80vh;
+  background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 50%, #ffffff 100%);
+  border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transform: scale(0) translateX(100px);
+  opacity: 0;
+  transform-origin: bottom right;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-panel-content.active {
+  transform: scale(1) translateX(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 面板头部 */
+.floating-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.floating-panel-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+  letter-spacing: -0.5px;
+}
+
+.panel-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(243, 244, 246, 0.9);
+  border-radius: 8px;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.panel-close-btn:hover {
+  background: rgba(229, 231, 235, 1);
+  color: #111827;
+  transform: rotate(90deg);
+}
+
+/* 面板主体 */
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+.panel-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.panel-body::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* ========== 原popup界面样式 ========== */
+
+:root {
+  /* 主题�?- 高级灰白色系 */
+  --primary-gradient: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 50%, #ffffff 100%);
+  --primary-color: #6b7280;
+  --primary-dark: #4b5563;
+  --primary-light: #9ca3af;
+  
+  /* 成功�?- 深绿�?*/
+  --success-color: #059669;
+  --success-dark: #047857;
+  --success-light: #10b981;
+  
+  /* 警告�?- 深橙�?*/
+  --warning-color: #d97706;
+  --warning-dark: #b45309;
+  
+  /* 危险�?- 深红�?*/
+  --danger-color: #dc2626;
+  --danger-dark: #b91c1c;
+  
+  /* 中性色 - 灰白色系 */
+  --bg-primary: #f9fafb;
+  --bg-secondary: #f3f4f6;
+  --bg-tertiary: #e5e7eb;
+  --bg-card: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  
+  /* 玻璃态效�?- 灰白�?*/
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-dark: rgba(243, 244, 246, 0.9);
+  --glass-border: rgba(229, 231, 235, 0.8);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
+  
+  /* 动画时长 */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+  
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+#signup-floating-ball .status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  position: relative;
+  transition: all var(--transition-normal);
+  color: var(--text-primary);
+}
+
+#signup-floating-ball .status > span {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+#signup-floating-ball .status:hover {
+  background: var(--glass-bg-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+#signup-floating-ball .indicator {
+  font-size: 24px;
+  animation: pulse-slow 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+#signup-floating-ball .indicator.idle { 
+  color: var(--text-muted);
+  animation: none;
+}
+
+#signup-floating-ball .indicator.running { 
+  color: var(--warning-color);
+  animation: spin 2s linear infinite;
+}
+
+#signup-floating-ball .indicator.success { 
+  color: var(--success-color);
+  animation: bounce 0.6s ease-out;
+}
+
+#signup-floating-ball .indicator.error { 
+  color: var(--danger-color);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* 进度�?*/
+#signup-floating-ball .progress-container {
+  margin-bottom: 16px;
+  opacity: 1;
+  max-height: 45px;
+  transition: all var(--transition-normal);
+}
+
+#signup-floating-ball .progress-container.hidden {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+#signup-floating-ball .progress-bar-wrapper {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--glass-border);
+}
+
+#signup-floating-ball .progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success-color) 0%, var(--success-light) 100%);
+  width: 0%;
+  transition: width var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+#signup-floating-ball .progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+#signup-floating-ball .progress-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* 控制按钮�?*/
+#signup-floating-ball .controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+#signup-floating-ball .control-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 按钮基础样式 */
+#signup-floating-ball .btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#signup-floating-ball .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width var(--transition-normal), height var(--transition-normal);
+}
+
+#signup-floating-ball .btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+#signup-floating-ball .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+#signup-floating-ball .btn:active {
+  transform: translateY(-1px);
+}
+
+#signup-floating-ball .btn:disabled,
+#signup-floating-ball .btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(30%);
+  transform: none !important;
+}
+
+/* 主要按钮 */
+#signup-floating-ball .btn-primary {
+  background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%);
+  color: white;
+}
+
+#signup-floating-ball .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--success-dark) 0%, #047857 100%);
+}
+
+/* 继续按钮 */
+#signup-floating-ball .btn-continue {
+  background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-dark) 100%);
+  color: white;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+#signup-floating-ball .btn-continue:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--warning-dark) 0%, #b45309 100%);
+  animation: none;
+}
+
+/* 次要按钮 */
+#signup-floating-ball .btn-secondary {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+}
+
+#signup-floating-ball .btn-secondary:hover:not(:disabled) {
+  background: var(--glass-bg-dark);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* 危险按钮 */
+#signup-floating-ball .btn-danger {
+  background: linear-gradient(135deg, var(--danger-color) 0%, var(--danger-dark) 100%);
+  color: white;
+}
+
+#signup-floating-ball .btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--danger-dark) 0%, #b91c1c 100%);
+}
+
+/* 警告按钮 */
+#signup-floating-ball .btn-warning {
+  background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-dark) 100%);
+  color: white;
+}
+
+/* 复制按钮 */
+#signup-floating-ball .btn-copy {
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+#signup-floating-ball .btn-copy:hover {
+  background: var(--glass-bg-dark);
+  transform: scale(1.05);
+}
+

@@ -1,0 +1,76 @@
+<!-- 悬浮球HTML结构 - 完整保留原popup界面 -->
+<div id="signup-floating-ball" class="signup-floating-ball">
+  <!-- 悬浮球按钮 -->
+  <div class="floating-ball-trigger">
+    🚀
+  </div>
+  
+  <!-- 展开的面板 - 完整复用原popup界面 -->
+  <div class="floating-panel-content">
+    <div class="floating-panel-header">
+      <h1>🚀 注册助手</h1>
+      <button class="panel-close-btn">✕</button>
+    </div>
+    
+    <div class="panel-body">
+      <div class="status">
+        <div id="floating-status-indicator" class="indicator idle">●</div>
+        <span id="floating-status-text">就绪</span>
+        <button id="floating-brain-btn" class="brain-trigger-btn" title="打开超级智能大脑">🧠</button>
+      </div>
+      
+      <!-- 进度条 -->
+      <div class="progress-container hidden">
+        <div class="progress-bar-wrapper">
+          <div id="floating-progress-bar" class="progress-bar"></div>
+        </div>
+        <div id="floating-progress-text" class="progress-text">0%</div>
+      </div>
+      
+      <div class="controls">
+        <div class="control-row">
+          <button id="floating-start-btn" class="btn btn-primary">开始注册</button>
+          <button id="floating-stop-btn" class="btn btn-danger hidden">停止监听</button>
+        </div>
+        <div class="control-row">
+          <button id="floating-reset-btn" class="btn btn-warning">重新开始</button>
+          <button id="floating-accounts-btn" class="btn btn-secondary">查看账号</button>
+        </div>
+        <div class="control-row">
+          <button id="floating-stats-btn" class="btn btn-secondary">📊 查看统计</button>
+        </div>
+      </div>
+      
+      <div id="floating-current-account" class="account-info hidden">
+        <h3>当前账号</h3>
+        <div class="field">
+          <label>邮箱:</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="floating-account-email" style="flex: 1; word-break: break-all;"></span>
+            <button id="floating-copy-email-btn" class="btn-copy" title="复制邮箱">📋</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>密码:</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="floating-account-password" style="flex: 1; word-break: break-all;"></span>
+            <button id="floating-copy-password-btn" class="btn-copy" title="复制密码">📋</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>用户名:</label>
+          <span id="floating-account-username"></span>
+        </div>
+        <div class="field">
+          <label>会话:</label>
+          <span id="floating-account-session" style="font-family: 'Courier New', monospace; opacity: 0.9;"></span>
+        </div>
+      </div>
+      
+      <div id="floating-logs" class="logs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 超级智能大脑面板容器 -->
+<div id="floating-brain-container"></div>
